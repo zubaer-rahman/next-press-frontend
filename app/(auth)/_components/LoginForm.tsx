@@ -23,11 +23,10 @@ const LoginForm = () => {
   const router = useRouter();
   useEffect(() => {
     if (!state) return;
-    // Don't show toasts on initial mount. `statusCode === 0` means no response yet.
     if (state.statusCode === 0) return;
     if (state.success) {
       toast.success(state.message || "Logged in successfully!");
-      router.push("/dashboard");
+      //router.push("/dashboard");
       return;
     }
     toast.error(state.message || "Login failed!");

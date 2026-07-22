@@ -8,7 +8,7 @@ export const getMe = async () => {
 
   if (!accessToken) {
     return {
-      success: true,
+      success: false,
       message: "User not logged in",
     };
   }
