@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Articles", href: "/articles" },
+  { label: "Premium", href: "/premium" },
   { label: "News", href: "/news" },
   { label: "Authors", href: "/authors" },
   { label: "About", href: "/about" },
@@ -79,7 +79,7 @@ const Navbar = ({ user }: NavbarProps) => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background text-foreground">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-4">
+      <div className="mx-auto max-w-7xl flex h-16 items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <span className="text-2xl font-bold tracking-tight">
