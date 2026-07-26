@@ -9,8 +9,6 @@ export const getPremiumNews = async ({
     [key: string]: string | string[] | undefined;
   };
 }) => {
-  // const searchTerm = `${query?.searchTerm ? `?searchTerm=${query?.searchTerm}` : ""}`;
-
   const params = new URLSearchParams();
   if (query && query.searchTerm) {
     params.set("searchTerm", query.searchTerm as string);

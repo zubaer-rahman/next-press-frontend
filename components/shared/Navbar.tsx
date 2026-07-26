@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { User, Settings, LogOut, Menu } from "lucide-react";
+import { User, Settings, LogOut, Menu, LayoutDashboard } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,8 +27,9 @@ const navItems = [
 ];
 
 const userMenu = [
-  { label: "Profile", href: "/profile", icon: User },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Dashboard", icon: LayoutDashboard, action: "dashboard" },
+  { label: "Profile", icon: User, action: "profile" },
+  { label: "Settings", icon: Settings, action: "settings" },
 ];
 
 type IUser = {
@@ -63,11 +64,17 @@ const Navbar = ({ user }: NavbarProps) => {
   const [isLogout, setIsLogout] = useState(false);
   const handleUserMenuAction = async (action: string) => {
     console.log(`User menu action: ${action}`);
-
+    if (action === "dashboard") {
+      if (user.data?.profile.role === "USER") router.push("/dashboard");
+      if (user.data?.profile.role === "AUTHOR") router.push("/dashboard");
+      if (user.data?.profile.role === "ADMIN") router.push("/admin-dashboard");
+      return;
+    }
     if (action === "logout" && user?.success) {
       await logout();
       setIsLogout(true);
     }
+    return;
   };
 
   useEffect(() => {
@@ -132,11 +139,12 @@ const Navbar = ({ user }: NavbarProps) => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               {userMenu.map((item) => (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href}>
-                    <item.icon className="mr-2 h-4 w-4" aria-hidden="true" />
-                    {item.label}
-                  </Link>
+                <DropdownMenuItem
+                  key={item.label}
+                  onClick={async () => await handleUserMenuAction(item.action)}
+                >
+                  <item.icon className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {item.label}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { loginAction, type loginState } from "../_actions/authActions";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const initialState: loginState = {
   success: false,
@@ -19,14 +19,18 @@ const initialState: loginState = {
 };
 
 const LoginForm = () => {
-  const [state, action, pending] = useActionState(loginAction, initialState);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") ?? "";
+  const [state, action, pending] = useActionState(
+    loginAction.bind(null, redirectTo),
+    initialState,
+  );
   const router = useRouter();
   useEffect(() => {
     if (!state) return;
     if (state.statusCode === 0) return;
     if (state.success) {
       toast.success(state.message || "Logged in successfully!");
-      //router.push("/dashboard");
       return;
     }
     toast.error(state.message || "Login failed!");

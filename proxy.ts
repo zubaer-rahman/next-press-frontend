@@ -1,9 +1,10 @@
+
 import { JwtPayload } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtUtils } from "./utils/jwt";
 import { cookies } from "next/headers";
-import { getNewAccessToken } from "./service/getNewAccessToken";
+import { getNewAccessToken } from "./service/getAccessToken";
 import { getSubscriptionStatus } from "./app/(public)/_actions/getSubscriptionStatus";
 
 const AUTH_ROUTES = ["/login", "/register"];
@@ -69,7 +70,9 @@ export async function proxy(request: NextRequest) {
   );
 
   if (!accessToken && !isAuthRoute && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirectTo", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   if (pathname.startsWith("/dashboard") && userRole !== "USER") {

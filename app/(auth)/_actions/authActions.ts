@@ -14,10 +14,11 @@ export type loginState = {
   };
 };
 export const loginAction = async (
+  redirectTo: string,
   prevState: loginState,
   formData: FormData,
 ) => {
-  console.log(prevState);
+  console.log(redirectTo, "redirectTo");
   const email = formData.get("email");
   const password = formData.get("password");
 
@@ -50,6 +51,16 @@ export const loginAction = async (
       maxAge: 60 * 60 * 24 * 7,
     });
     const decoded = jwt.decode(result.data.accessToken) as JwtPayload;
+
+    if (
+      redirectTo &&
+      typeof redirectTo === "string" &&
+      redirectTo.startsWith("/") &&
+      !redirectTo.startsWith("//")
+    ) {
+      redirect(redirectTo);
+    }
+
     if (decoded.role === "USER") {
       redirect("/dashboard");
     }
