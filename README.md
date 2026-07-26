@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NextPress Frontend
 
-## Getting Started
+Multi-role news and content publishing platform built with Next.js 16 App Router, shadcn/ui components, and Tailwind CSS 4.
 
-First, run the development server:
+## Stack
+
+- **Framework:** Next.js 16 (App Router, React 19)
+- **Styling:** Tailwind CSS 4 + shadcn/ui (16 components)
+- **Auth:** JWT (httpOnly cookies with automatic token refresh)
+- **State:** Server components + Server Actions (`"use server"`)
+- **Package manager:** pnpm
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev                  # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Configure `BACKEND_API_URL` in `.env.local` (default: `http://localhost:5000`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/
+  (auth)/                 # Login, register (guest-only routes)
+  (dashboard)/            # USER/AUTHOR/ADMIN dashboards
+  (public)/               # Home, news, premium, authors, about
+  layout.tsx              # Root layout with Navbar + Toaster
+  proxy.ts                # Auth middleware (role guard, token refresh)
+  loading.tsx             # Full-page loading skeleton
+components/
+  shared/                 # Navbar, SafeImage
+  ui/                     # shadcn/ui primitives (button, card, dialog, etc.)
+lib/
+  types.ts                # Shared interfaces (IPost, IComment, IUser)
+  utils.ts                # cn() helper
+```
 
-## Learn More
+## Routes
 
-To learn more about Next.js, take a look at the following resources:
+| Path | Access | Description |
+|---|---|---|
+| `/` | Public | Home with hero section and latest news |
+| `/news` | Public | Browse all non-premium posts with search |
+| `/news/[id]` | Public | Post detail with comments |
+| `/premium` | Subscriber | Premium-only content |
+| `/payment` | Authenticated | Subscription checkout (Stripe) |
+| `/authors` | Public | Author listing |
+| `/about` | Public | About page |
+| `/login` | Guest | Sign in |
+| `/register` | Guest | Create account |
+| `/dashboard` | USER | User dashboard |
+| `/dashboard/my-posts` | USER | Manage own posts |
+| `/dashboard/my-profile` | USER | Edit profile |
+| `/author-dashboard` | AUTHOR | Author dashboard |
+| `/author-dashboard/my-posts` | AUTHOR | Manage authored posts |
+| `/admin-dashboard` | ADMIN | Admin dashboard |
+| `/admin-dashboard/my-posts` | ADMIN | Manage any post |
+| `/admin-dashboard/stats` | ADMIN | Site-wide statistics |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Auth flow
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Login stores `accessToken` and `refreshToken` in httpOnly cookies.
+- The `proxy.ts` middleware checks auth on every request, refreshes tokens if needed, and enforces role-based access.
+- All server actions access the backend via `Cookie: accessToken=<token>` or `Authorization: Bearer <token>`.
+- Three roles: `USER`, `AUTHOR`, `ADMIN` — each with tailored dashboard views and sidebar navigation.
 
-## Deploy on Vercel
+## Data fetching pattern
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Page-level data is fetched in server components using server actions. Client interactions (create, edit, delete, comments) use `useActionState` with revalidation tags (`my-posts`, `public-posts`, `premium-posts`, `my-profile`, `post-stats`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+No manual API calls in client components — all backend communication flows through server actions.
