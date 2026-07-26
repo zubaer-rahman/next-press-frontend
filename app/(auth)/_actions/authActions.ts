@@ -74,3 +74,36 @@ export const loginAction = async (
 
   return result;
 };
+
+export type registerState = {
+  success: boolean;
+  statusCode: number;
+  message: string;
+};
+
+export const registerAction = async (
+  prevState: registerState,
+  formData: FormData,
+) => {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  const payload = { name, email, password };
+
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/users/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const result: registerState = await res.json();
+
+  if (result.success) {
+    redirect("/login");
+  }
+
+  return result;
+};

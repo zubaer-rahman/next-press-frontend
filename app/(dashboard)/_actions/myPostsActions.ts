@@ -113,3 +113,31 @@ export const updatePost = async (
   } else revalidateTag("public-posts", { expire: 0 });
   return result;
 };
+
+export const deletePost = async (postId: string) => {
+  const accessToken = await getAccessToken();
+
+  if (!accessToken) {
+    return { success: false, message: "User not logged in" };
+  }
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/posts/${postId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Cookie: `accessToken=${accessToken}`,
+      },
+    },
+  );
+
+  const result = await res.json();
+
+  if (result.success) {
+    revalidateTag("my-posts", { expire: 0 });
+    revalidateTag("public-posts", { expire: 0 });
+    revalidateTag("premium-posts", { expire: 0 });
+  }
+
+  return result;
+};

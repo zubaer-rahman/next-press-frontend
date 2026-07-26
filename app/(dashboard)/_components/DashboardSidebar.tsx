@@ -69,7 +69,11 @@ export default function DashboardSidebar({ user }: NavbarProps) {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={pathname === item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-semibold"
+                  >
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.label}</span>

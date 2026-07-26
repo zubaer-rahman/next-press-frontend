@@ -1,5 +1,5 @@
 import { ISidebarItem } from "@/lib/types";
-import { FileText, LayoutDashboard } from "lucide-react";
+import { FileText, LayoutDashboard, User } from "lucide-react";
 
 export const AUTHOR_SIDEBAR_ITEMS: ISidebarItem[] = [
   {
@@ -11,5 +11,10 @@ export const AUTHOR_SIDEBAR_ITEMS: ISidebarItem[] = [
     label: "My Posts",
     href: "/author-dashboard/my-posts",
     icon: FileText,
+  },
+  {
+    label: "My Profile",
+    href: "/dashboard/my-profile",
+    icon: User,
   },
 ];
